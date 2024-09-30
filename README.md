@@ -47,7 +47,7 @@ There is total 21 landmarks points.
  Testing:
  You can test this setup by running the app and monitoring the OSC messages using a tool like Pure Data or any other OSC listener on IP 192.168.1.100 and port 8000.
 
- ##Basic UI## 
+ ## Basic UI ## 
  Only camera is showing in  UI once you grant permission to the Camera view inside the app.
 
  ## Pure Data Integration (Optional) ## 
