@@ -51,7 +51,7 @@ There is total 21 landmarks points.
  ## Pure Data Integration (Optional) ## 
  Its directly linked with the OSC - 
 
- ## App WorkFlow## 
+ ## App WorkFlow ## 
  1. User clicks on app icon and it will launch an application
  2. Camera Permission required by user
  3. Once its launch camera and when you place hand in front of the front camera, its start detecting and create a pattern by dashed line
