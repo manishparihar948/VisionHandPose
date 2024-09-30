@@ -62,7 +62,12 @@ There is total 21 landmarks points.
  1. User clicks on app icon and it will launch an application
  2. Camera Permission required by user
  3. Once its launch camera and when you place hand in front of the front camera, its start detecting and create a pattern by dashed line
- 4. If the hand placed it will play sound of bird audio and when you move hand from the front of the camera its stop playing audio. 
+ 4. If the hand placed it will play sound of bird audio and when you move hand from the front of the camera its stop playing audio.
+    (At this moment Hand Pose/Gesture Image is not fetching audio for pure data - its due to framework dependency which is not available appropriately.
+    But code for OSC and PureData logic is available in the code repository)
+5. Network Management and Endpoint is also available in the code repository.
+    
+    
 
 ** How the gesture data is sent via OSC.**
 Hand Gesture data is sentt via OSC:
@@ -76,4 +81,11 @@ Hand Gesture data is sentt via OSC:
  **Limitations**
 1. Not working on ios simulators because of the camera access.
 2. Also its available for front camera as of now. (which we can improve in future)
-3. Cannot test the PureData we dont have access the the framework or library of OSC directly 
+3. Cannot test the PureData we dont have access the the framework or library of OSC directly
+
+** Future Scope **
+1. Integrate CI/CD
+2. Network Management
+3. Fastlane for build version
+4. XCTestCase for UnitTest, UITest and Integration Test
+5. Crashalytics - Analytic for Tracking Enduser activity
