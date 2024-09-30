@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CD9CD8F42CAAB8A500D8E720 /* OSCKit in Frameworks */ = {isa = PBXBuildFile; productRef = CD8602AB2CAAB19C001D343E /* OSCKit */; };
+		CD9CD8F52CAAB8A500D8E720 /* OSCKitCore in Frameworks */ = {isa = PBXBuildFile; productRef = CD8602AD2CAAB19C001D343E /* OSCKitCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		CD8602882CAA03C8001D343E /* VisionHandPose.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VisionHandPose.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD9CD8F52CAAB8A500D8E720 /* OSCKitCore in Frameworks */,
+				CD9CD8F42CAAB8A500D8E720 /* OSCKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

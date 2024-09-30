@@ -28,7 +28,8 @@ class CameraViewController: UIViewController {
     
     // OSC Client instance
     private var oscClient = F53OSCClient()
-    private let oscHost = "192.168.1.100"  // Target IP
+    // private var oscClient = Endpoint.oscHandGesture // Future Scope
+    private let oscHost =  "192.168.1.100"  // Target IP
     private let oscPort: UInt16 = 8000     // Target port
     
     override func viewDidLoad() {
@@ -108,8 +109,8 @@ class CameraViewController: UIViewController {
         for (index, point) in points.enumerated() {
             // Create an OSC message for each point (finger joint)
             let oscMessage = F53OSCMessage(
-                addressPattern: "/hand/point\(index)",
-                arguments: [Float(point.x), Float(point.y)]
+                addressPattern: "/hand/point\(index)",  // Sends /hand/point0, /hand/point1, etc.
+                arguments: [Float(point.x), Float(point.y)]  // Sends X and Y coordinates as floats
             )
             
             // Send the OSC message
