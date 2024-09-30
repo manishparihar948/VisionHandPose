@@ -24,7 +24,8 @@ class CameraViewController: UIViewController {
     // Add AVAudioPlayer property
     private var audioPlayer: AVAudioPlayer?
     
-   
+    // Track if the hand is currently detected
+    private var isHandVisible = false
     /*
     // OSC Client instance
     private var oscClient = F53OSCClient()
@@ -82,7 +83,7 @@ class CameraViewController: UIViewController {
     
     // Setup AVAudioPlayer
     private func setupAudioPlayer() {
-        guard let soundURL = Bundle.main.url(forResource: "mysound", withExtension: "mp3") else {
+        guard let soundURL = Bundle.main.url(forResource: "bird", withExtension: "wav") else {
                     print("Sound file not found")
                     return
                 }
@@ -90,6 +91,8 @@ class CameraViewController: UIViewController {
                 do {
                     audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
                     audioPlayer?.prepareToPlay()  // Preload the sound
+                    //audioPlayer?.numberOfLoops = -1 // This makes the sound loop indefinitely
+
                 } catch {
                     print("Error initializing audio player: \(error.localizedDescription)")
                 }
@@ -97,9 +100,15 @@ class CameraViewController: UIViewController {
     
     //  Function to play the sound
     private func playSound() {
-        audioPlayer?.stop() // Stop the sound if already playing
+        //audioPlayer?.stop() // Stop the sound if already playing
+        audioPlayer?.currentTime = 0 // Reset the sound to the beginning
         audioPlayer?.play()
     }
+    
+    // Function to stop the sound
+       private func stopSound() {
+           audioPlayer?.stop()
+       }
     
     /*
     // Setup the OSC Client
@@ -168,10 +177,30 @@ class CameraViewController: UIViewController {
             }
         }
         
+        /*
         // Play sound when hand is detected
                 if !pointsConverted.isEmpty {
                     playSound()  // Play sound if hand points are detected
                 }
+         */
+        
+        // Check if hand points are detected
+        // Hand Detection Logic
+            if !pointsConverted.isEmpty {
+                // Hand is detected
+                if isHandVisible == false {
+                    // Hand was not visible before, now it's detected, play the sound
+                    playSound()
+                    isHandVisible = true // Update the state to reflect that the hand is now visible
+                }
+            } else {
+                // No hand detected
+                if isHandVisible == true  {
+                    // Hand was visible before, now it's removed, stop the sound
+                    stopSound()
+                    isHandVisible = false // Update the state to reflect that the hand is no longer visible
+                }
+            }
         
         /*
         // Send converted points over OSC
