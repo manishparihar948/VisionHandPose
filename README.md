@@ -83,7 +83,7 @@ Hand Gesture data is sentt via OSC:
 2. Also its available for front camera as of now. (which we can improve in future)
 3. Cannot test the PureData we dont have access the the framework or library of OSC directly
 
-** Future Scope **
+**Future Scope**
 1. Integrate CI/CD
 2. Network Management
 3. Fastlane for build version
