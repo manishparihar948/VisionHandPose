@@ -51,6 +51,21 @@ There is total 21 landmarks points.
  ## Pure Data Integration (Optional) ## 
  Its directly linked with the OSC - 
 
+ ## App WorkFlow## 
+ 1. User clicks on app icon and it will launch an application
+ 2. Camera Permission required by user
+ 3. Once its launch camera and when you place hand in front of the front camera, its start detecting and create a pattern by dashed line
+ 4. If the hand placed it will play sound of bird audio and when you move hand from the front of the camera its stop playing audio
+
+** How the gesture data is sent via OSC.**
+Hand Gesture data is sentt via OSC:
+1. First we had setup F53OSCClient to connect to the target IP and port.
+2. Each finger joint position, show as a CGPoint
+3. Then the CGPoint sent to OSC message in the sendOSCMessage method.
+4. And this message contains an address pattern like /hand/point0 and /hand/point1 etc.
+5. And In processPoint method, the points are converted to screen coordinates, then sent through OSC.
+6. At same time its displayed on the camera .
+
  **Limitations**
 1. Not working on ios simulators because of the camera access.
 2. Also its available for front camera as of now. (which we can improve in future)
