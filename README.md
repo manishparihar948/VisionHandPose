@@ -69,7 +69,7 @@ There is total 21 landmarks points.
     
     
 
-** How the gesture data is sent via OSC.**
+**How the gesture data is sent via OSC.**
 Hand Gesture data is sentt via OSC:
 1. First we had setup F53OSCClient to connect to the target IP and port.
 2. Each finger joint position, show as a CGPoint
