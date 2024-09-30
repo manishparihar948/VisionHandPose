@@ -78,6 +78,8 @@
 			);
 			name = VisionHandPose;
 			packageProductDependencies = (
+				CD8602AB2CAAB19C001D343E /* OSCKit */,
+				CD8602AD2CAAB19C001D343E /* OSCKitCore */,
 			);
 			productName = VisionHandPose;
 			productReference = CD8602882CAA03C8001D343E /* VisionHandPose.app */;
@@ -107,6 +109,9 @@
 			);
 			mainGroup = CD86027F2CAA03C8001D343E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CD8602AA2CAAB19C001D343E /* XCRemoteSwiftPackageReference "OSCKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CD8602892CAA03C8001D343E /* Products */;
 			projectDirPath = "";
@@ -339,6 +344,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CD8602AA2CAAB19C001D343E /* XCRemoteSwiftPackageReference "OSCKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/orchetect/OSCKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.6.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CD8602AB2CAAB19C001D343E /* OSCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CD8602AA2CAAB19C001D343E /* XCRemoteSwiftPackageReference "OSCKit" */;
+			productName = OSCKit;
+		};
+		CD8602AD2CAAB19C001D343E /* OSCKitCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CD8602AA2CAAB19C001D343E /* XCRemoteSwiftPackageReference "OSCKit" */;
+			productName = OSCKitCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CD8602802CAA03C8001D343E /* Project object */;
 }

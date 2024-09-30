@@ -8,13 +8,12 @@
 import UIKit
 import AVFoundation
 import Vision
-
 // Add F53OSC for OSC communication
-// import F53OSC
+import OSCKit
 
 
 class CameraViewController: UIViewController {
-
+    
     private var cameraView: CameraView{ view as! CameraView }
     
     private let videoDataOutputQueue = DispatchQueue(label: "CameraFeedDataOutput", qos: .userInteractive)
@@ -26,13 +25,12 @@ class CameraViewController: UIViewController {
     
     // Track if the hand is currently detected
     private var isHandVisible = false
-    /*
+    
     // OSC Client instance
     private var oscClient = F53OSCClient()
     private let oscHost = "192.168.1.100"  // Target IP
     private let oscPort: UInt16 = 8000     // Target port
-     */
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -40,42 +38,30 @@ class CameraViewController: UIViewController {
         setupAudioPlayer()
         
         // Setup OSC Client
-        // setupOSCClient()
-
+        setupOSCClient()
+        
         // This sample app detects one hand only.
         handPoseRequest.maximumHandCount = 1
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        /*
-        do {
-            if cameraFeedSession == nil {
-                cameraView.previewLayer.videoGravity = .resizeAspectFill
-                try setupAVSession()
-                cameraView.previewLayer.session = cameraFeedSession
-            }
-            cameraFeedSession?.startRunning()
-        } catch {
-            AppError.display(error, inViewController: self)
-        }
-         */
         
         DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                do {
-                    if self.cameraFeedSession == nil {
-                        self.cameraView.previewLayer.videoGravity = .resizeAspectFill
-                        try self.setupAVSession()
-                        self.cameraView.previewLayer.session = self.cameraFeedSession
-                    }
-                    self.cameraFeedSession?.startRunning()
-                } catch {
-                    AppError.display(error, inViewController: self)
+            guard let self = self else { return }
+            do {
+                if self.cameraFeedSession == nil {
+                    self.cameraView.previewLayer.videoGravity = .resizeAspectFill
+                    try self.setupAVSession()
+                    self.cameraView.previewLayer.session = self.cameraFeedSession
                 }
+                self.cameraFeedSession?.startRunning()
+            } catch {
+                AppError.display(error, inViewController: self)
             }
+        }
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         cameraFeedSession?.stopRunning()
         super.viewWillDisappear(animated)
@@ -84,18 +70,18 @@ class CameraViewController: UIViewController {
     // Setup AVAudioPlayer
     private func setupAudioPlayer() {
         guard let soundURL = Bundle.main.url(forResource: "bird", withExtension: "wav") else {
-                    print("Sound file not found")
-                    return
-                }
-
-                do {
-                    audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
-                    audioPlayer?.prepareToPlay()  // Preload the sound
-                    //audioPlayer?.numberOfLoops = -1 // This makes the sound loop indefinitely
-
-                } catch {
-                    print("Error initializing audio player: \(error.localizedDescription)")
-                }
+            print("Sound file not found")
+            return
+        }
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+            audioPlayer?.prepareToPlay()  // Preload the sound
+            //audioPlayer?.numberOfLoops = -1 // This makes the sound loop indefinitely
+            
+        } catch {
+            print("Error initializing audio player: \(error.localizedDescription)")
+        }
     }
     
     //  Function to play the sound
@@ -106,52 +92,51 @@ class CameraViewController: UIViewController {
     }
     
     // Function to stop the sound
-       private func stopSound() {
-           audioPlayer?.stop()
-       }
+    private func stopSound() {
+        audioPlayer?.stop()
+    }
     
-    /*
+    
     // Setup the OSC Client
     func setupOSCClient() {
-            oscClient.host = oscHost
-            oscClient.port = oscPort
+        oscClient.host = oscHost
+        oscClient.port = oscPort
     }
-     
-     // Function to send points data over OSC
+    
+    // Function to send points data over OSC
     func sendOSCMessage(_ points: [CGPoint]) {
-             for (index, point) in points.enumerated() {
-                 // Create an OSC message for each point (finger joint)
-                 let oscMessage = F53OSCMessage(
-                     addressPattern: "/hand/point\(index)",
-                     arguments: [Float(point.x), Float(point.y)]
-                 )
-                 
-                 // Send the OSC message
-                 oscClient.send(oscMessage)
-             }
+        for (index, point) in points.enumerated() {
+            // Create an OSC message for each point (finger joint)
+            let oscMessage = F53OSCMessage(
+                addressPattern: "/hand/point\(index)",
+                arguments: [Float(point.x), Float(point.y)]
+            )
+            
+            // Send the OSC message
+            oscClient.send(oscMessage)
+        }
     }
-     */
-
+    
     func setupAVSession() throws {
         // Select a front-facing camera, make an input.
         guard let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
             throw AppError.captureSessionSetup(reason: "Could not find a front-facing camera.")
         }
-
+        
         guard let deviceInput = try? AVCaptureDeviceInput(device: videoDevice) else {
             throw AppError.captureSessionSetup(reason: "Could not create video device input.")
         }
-
+        
         let session = AVCaptureSession()
         session.beginConfiguration()
         session.sessionPreset = AVCaptureSession.Preset.high
-
+        
         // Add a video input.
         guard session.canAddInput(deviceInput) else {
             throw AppError.captureSessionSetup(reason: "Could not add video device input to the session")
         }
         session.addInput(deviceInput)
-
+        
         let dataOutput = AVCaptureVideoDataOutput()
         if session.canAddOutput(dataOutput) {
             session.addOutput(dataOutput)
@@ -165,7 +150,7 @@ class CameraViewController: UIViewController {
         session.commitConfiguration()
         cameraFeedSession = session
     }
-
+    
     //
     func processPoints(_ points: [CGPoint?]) {
         // Convert points from AVFoundation coordinates to UIKit coordinates.
@@ -177,35 +162,26 @@ class CameraViewController: UIViewController {
             }
         }
         
-        /*
-        // Play sound when hand is detected
-                if !pointsConverted.isEmpty {
-                    playSound()  // Play sound if hand points are detected
-                }
-         */
-        
         // Check if hand points are detected
         // Hand Detection Logic
-            if !pointsConverted.isEmpty {
-                // Hand is detected
-                if isHandVisible == false {
-                    // Hand was not visible before, now it's detected, play the sound
-                    playSound()
-                    isHandVisible = true // Update the state to reflect that the hand is now visible
-                }
-            } else {
-                // No hand detected
-                if isHandVisible == true  {
-                    // Hand was visible before, now it's removed, stop the sound
-                    stopSound()
-                    isHandVisible = false // Update the state to reflect that the hand is no longer visible
-                }
+        if !pointsConverted.isEmpty {
+            // Hand is detected
+            if isHandVisible == false {
+                // Hand was not visible before, now it's detected, play the sound
+                playSound()
+                isHandVisible = true // Update the state to reflect that the hand is now visible
             }
+        } else {
+            // No hand detected
+            if isHandVisible == true  {
+                // Hand was visible before, now it's removed, stop the sound
+                stopSound()
+                isHandVisible = false // Update the state to reflect that the hand is no longer visible
+            }
+        }
         
-        /*
         // Send converted points over OSC
         sendOSCMessage(pointsConverted)
-         */
         
         // Show the points on the screen
         cameraView.showPoints(pointsConverted)
@@ -236,18 +212,18 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
         var littlePip: CGPoint?
         var littleMcp: CGPoint?
         var wrist: CGPoint?
-
-        // First step to Create a Request Handler - which is ImageRequestHandler
+        
+        // First step to Create a Request Handler - which is VNImageRequestHandler
         let handler = VNImageRequestHandler(cmSampleBuffer: sampleBuffer, orientation: .up, options: [:])
         do {
             let startTime = CFAbsoluteTimeGetCurrent()
             // Second Step - Perform VNDetectHumanHandPoseRequest
             // Third Step - Write a request to the handler
             try handler.perform([handPoseRequest])
-        
+            
             let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
             print("Time: \(timeElapsed) s. FPS: \(1/timeElapsed)")
-
+            
             // If above steps work well then we perform well then we will have Points Observations - In this case VNRecognizedPointsObservation returns
             
             // Continue only when a hand was detected in the frame.
@@ -266,7 +242,7 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
             let thumbIpPoint = try observation.recognizedPoint(.thumbIP)
             let thumbMpPoint = try observation.recognizedPoint(.thumbMP)
             let thumbCmcPoint = try observation.recognizedPoint(.thumbCMC)
-
+            
             // TIP - Tip of the finger
             // DIP - Distal interphalangeal joint
             // PIP - Proximal interphalangeal joint
@@ -275,51 +251,51 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
             let indexDipPoint = try observation.recognizedPoint(.indexDIP)
             let indexPipPoint = try observation.recognizedPoint(.indexPIP)
             let indexMcpPoint = try observation.recognizedPoint(.indexMCP)
-
+            
             let middleTipPoint = try observation.recognizedPoint(.middleTip)
             let middleDipPoint = try observation.recognizedPoint(.middleDIP)
             let middlePipPoint = try observation.recognizedPoint(.middlePIP)
             let middleMcpPoint = try observation.recognizedPoint(.middleMCP)
-
+            
             let ringTipPoint = try observation.recognizedPoint(.ringTip)
             let ringDipPoint = try observation.recognizedPoint(.ringDIP)
             let ringPipPoint = try observation.recognizedPoint(.ringPIP)
             let ringMcpPoint = try observation.recognizedPoint(.ringMCP)
-
+            
             let littleTipPoint = try observation.recognizedPoint(.littleTip)
             let littleDipPoint = try observation.recognizedPoint(.littleDIP)
             let littlePipPoint = try observation.recognizedPoint(.littlePIP)
             let littleMcpPoint = try observation.recognizedPoint(.littleMCP)
-
+            
             let wristPoint = try observation.recognizedPoint(.wrist)
-
+            
             // Confidence threshold to filter low confidence points.
             let confidenceThreshold: Float = 0.3
             guard thumbTipPoint.confidence > confidenceThreshold &&
-                  thumbIpPoint.confidence > confidenceThreshold &&
-                  thumbMpPoint.confidence > confidenceThreshold &&
-                  thumbCmcPoint.confidence > confidenceThreshold &&
-                  indexTipPoint.confidence > confidenceThreshold &&
-                  indexDipPoint.confidence > confidenceThreshold &&
-                  indexPipPoint.confidence > confidenceThreshold &&
-                  indexMcpPoint.confidence > confidenceThreshold &&
-                  middleTipPoint.confidence > confidenceThreshold &&
-                  middleDipPoint.confidence > confidenceThreshold &&
-                  middlePipPoint.confidence > confidenceThreshold &&
-                  middleMcpPoint.confidence > confidenceThreshold &&
-                  ringTipPoint.confidence > confidenceThreshold &&
-                  ringDipPoint.confidence > confidenceThreshold &&
-                  ringPipPoint.confidence > confidenceThreshold &&
-                  ringMcpPoint.confidence > confidenceThreshold &&
-                  littleTipPoint.confidence > confidenceThreshold &&
-                  littleDipPoint.confidence > confidenceThreshold &&
-                  littlePipPoint.confidence > confidenceThreshold &&
-                  littleMcpPoint.confidence > confidenceThreshold &&
-                  wristPoint.confidence > confidenceThreshold else {
+                    thumbIpPoint.confidence > confidenceThreshold &&
+                    thumbMpPoint.confidence > confidenceThreshold &&
+                    thumbCmcPoint.confidence > confidenceThreshold &&
+                    indexTipPoint.confidence > confidenceThreshold &&
+                    indexDipPoint.confidence > confidenceThreshold &&
+                    indexPipPoint.confidence > confidenceThreshold &&
+                    indexMcpPoint.confidence > confidenceThreshold &&
+                    middleTipPoint.confidence > confidenceThreshold &&
+                    middleDipPoint.confidence > confidenceThreshold &&
+                    middlePipPoint.confidence > confidenceThreshold &&
+                    middleMcpPoint.confidence > confidenceThreshold &&
+                    ringTipPoint.confidence > confidenceThreshold &&
+                    ringDipPoint.confidence > confidenceThreshold &&
+                    ringPipPoint.confidence > confidenceThreshold &&
+                    ringMcpPoint.confidence > confidenceThreshold &&
+                    littleTipPoint.confidence > confidenceThreshold &&
+                    littleDipPoint.confidence > confidenceThreshold &&
+                    littlePipPoint.confidence > confidenceThreshold &&
+                    littleMcpPoint.confidence > confidenceThreshold &&
+                    wristPoint.confidence > confidenceThreshold else {
                 cameraView.showPoints([])
                 return
             }
-
+            
             // Convert points from Vision coordinates to AVFoundation coordinates.
             thumbTip = CGPoint(x: thumbTipPoint.location.x, y: 1 - thumbTipPoint.location.y)
             thumbIp = CGPoint(x: thumbIpPoint.location.x, y: 1 - thumbIpPoint.location.y)
@@ -342,12 +318,12 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
             littlePip = CGPoint(x: littlePipPoint.location.x, y: 1 - littlePipPoint.location.y)
             littleMcp = CGPoint(x: littleMcpPoint.location.x, y: 1 - littleMcpPoint.location.y)
             wrist = CGPoint(x: wristPoint.location.x, y: 1 - wristPoint.location.y)
-
+            
         } catch {
             cameraFeedSession?.stopRunning()
             AppError.display(error, inViewController: self)
         }
-
+        
         DispatchQueue.main.sync {
             self.processPoints([thumbTip, thumbIp, thumbMp, thumbCmc,
                                 indexTip, indexDip, indexPip, indexMcp,
@@ -364,7 +340,7 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
 // MARK: - CGPoint helpers
 
 extension CGPoint {
-
+    
     static func midPoint(p1: CGPoint, p2: CGPoint) -> CGPoint {
         return CGPoint(x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2)
     }
@@ -374,23 +350,3 @@ extension CGPoint {
     }
 }
 
-
-
-/**
- 
- Explanation:
- OSC Client Setup (setupOSCClient):
-
- Here, we set up the F53OSCClient instance. The IP and port are set to the target OSC receiver (you mentioned using IP 192.168.1.100 and port 8000).
- Sending OSC Messages (sendOSCMessage):
-
- In sendOSCMessage, each CGPoint (representing a finger joint position) is sent as an OSC message. Each OSC message contains an address pattern (e.g., /hand/point0) and arguments (the X and Y positions of the joint).
- For each point, a message like /hand/point0, /hand/point1, etc., is sent.
- Modifying processPoints:
-
- In processPoints, once points are processed and converted to UIKit coordinates, we send these points via OSC by calling sendOSCMessage.
- The gesture data is still shown on the camera preview using cameraView.showPoints(pointsConverted).
- Testing:
- You can test this setup by running the app and monitoring the OSC messages using a tool like Pure Data or any other OSC listener on IP 192.168.1.100 and port 8000.
- 
- */
