@@ -18,7 +18,9 @@ Device - iPhone 12 Pro (Physical Device)
 Privacy Access - Camera usage description
 
 **Dependency**
-Only workin on physical device - iPhone and iPad
+1. Add Vision Framework and AVFoundation Framework
+2. Install OSCKit and F53OSC  
+3. Only workin on physical/real device - iPhone and iPad
 
 ### Gesture Recognition : Hand Gesture recognized by Vision Framework 
 Access the hand gesture by creating a request handing using - VNImageRequestHandler. And the VNImageRequestHandler detects VNDetectHumanHandPoseRequest.
@@ -49,13 +51,18 @@ There is total 21 landmarks points.
  Only camera is showing in  UI once you grant permission to the Camera view inside the app.
 
  ## Pure Data Integration (Optional) ## 
- Its directly linked with the OSC - 
+ Its directly linked with the OSC - We have install the OSCKit and F53OSC. 
+ We need to ensure that Pure Data can listen and process the OSC message sent from the app.
+ In our exiting code we have setup F53OSCClient to send hand gesture data (finger joints position) as OSC messages.
+ To Test the Pure Data setup - Run the PureData patch and ensure its actively listening on port 8000
+ Run the ios app with hand gesture data being captured.
+ Monitor the Pure Data console to verify that the incoming OSC messsages are being correcly received and processed.
 
  ## App WorkFlow ## 
  1. User clicks on app icon and it will launch an application
  2. Camera Permission required by user
  3. Once its launch camera and when you place hand in front of the front camera, its start detecting and create a pattern by dashed line
- 4. If the hand placed it will play sound of bird audio and when you move hand from the front of the camera its stop playing audio
+ 4. If the hand placed it will play sound of bird audio and when you move hand from the front of the camera its stop playing audio. 
 
 ** How the gesture data is sent via OSC.**
 Hand Gesture data is sentt via OSC:
